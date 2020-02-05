@@ -15,6 +15,23 @@ class App extends Component {
     filter: "",
   };
 
+  componentDidMount() {
+    const persistedContacts = (localStorage.getItem('contacts'));
+
+    if (persistedContacts) {
+      this.setState({
+        contacts: JSON.parse(persistedContacts),
+      })
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+    console.log(localStorage);
+  }
+
   onSubmit = (name, number) => {
     if (this.state.contacts.find(contact => contact.number === number)) {
       alert(`${name} is already in contacts!`);
@@ -42,7 +59,6 @@ class App extends Component {
   };
 
   removeContact = id => {
-    // console.log(id);
     this.setState(prevState => {
       return {
         contacts: prevState.contacts.filter(contact => contact.id !== id)
