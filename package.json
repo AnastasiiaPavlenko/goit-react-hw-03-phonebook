@@ -37,6 +37,12 @@
       "last 1 safari version"
     ]
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test",
+      "pre-push": "npm test"
+    }
+  },
   "devDependencies": {
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.5.0",

@@ -29,11 +29,10 @@ class App extends Component {
     if (prevState.contacts !== this.state.contacts) {
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
     }
-    console.log(localStorage);
   }
 
   onSubmit = (name, number) => {
-    if (this.state.contacts.find(contact => contact.number === number)) {
+    if (this.state.contacts.some(contact => contact.number === number)) {
       alert(`${name} is already in contacts!`);
     } else {
       this.setState(({ contacts }) => ({
