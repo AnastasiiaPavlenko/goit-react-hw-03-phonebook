@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
+
 const uuidv1 = require('uuid/v1');
 
 class App extends Component {
@@ -12,22 +13,23 @@ class App extends Component {
       // { name: 'Eden Clements', number: '6451779', id: 'id-3' },
       // { name: 'Annie Copeland', number: '2279126', id: 'id-4' },
     ],
-    filter: "",
+    filter: '',
   };
 
   componentDidMount() {
-    const persistedContacts = (localStorage.getItem('contacts'));
+    const persistedContacts = localStorage.getItem('contacts');
 
     if (persistedContacts) {
       this.setState({
         contacts: JSON.parse(persistedContacts),
-      })
+      });
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    const { contacts } = this.state;
+    if (prevState.contacts !== contacts) {
+      localStorage.setItem('contacts', JSON.stringify(contacts));
     }
   }
 
@@ -36,19 +38,21 @@ class App extends Component {
       alert(`${name} is already in contacts!`);
     } else {
       this.setState(({ contacts }) => ({
-        contacts: [...contacts, {
-          name: name,
-          number: number,
-          id: uuidv1()
-        }]
+        contacts: [
+          ...contacts,
+          {
+            name,
+            number,
+            id: uuidv1(),
+          },
+        ],
       }));
-    };
+    }
   };
 
   changeFilter = filter => {
     this.setState({ filter });
   };
-
 
   getVisibleContacts = () => {
     const { contacts, filter } = this.state;
@@ -60,7 +64,7 @@ class App extends Component {
   removeContact = id => {
     this.setState(prevState => {
       return {
-        contacts: prevState.contacts.filter(contact => contact.id !== id)
+        contacts: prevState.contacts.filter(contact => contact.id !== id),
       };
     });
   };
@@ -68,27 +72,22 @@ class App extends Component {
   render() {
     const { contacts, filter } = this.state;
     const visibleContacts = this.getVisibleContacts();
-    let show;
 
-    if (visibleContacts.length > 0) {
-      (show = <>
-        <Filter value={filter} onChangeFilter={this.changeFilter} />
-        <ContactList contacts={visibleContacts} onRemove={this.removeContact} />
-      </>)
-    } else if (visibleContacts.length === 0 && contacts.length > 0) {
-      (show = <>
-        <Filter value={filter} onChangeFilter={this.changeFilter} />
-      </>)
-    }
-
-    return <>
-      <h1>Phonebook</h1>
-      <ContactForm onSubmit={this.onSubmit} />
-      <h2>Contacts</h2>
-      {show}
-    </>
-  };
-};
+    return (
+      <>
+        <h1>Phonebook</h1>
+        <ContactForm onSubmit={this.onSubmit} />
+        <h2>Contacts</h2>
+        {contacts.length > 1 && (
+          <Filter value={filter} onChangeFilter={this.changeFilter} />
+        )}
+        <ContactList
+          contacts={filter.length === 0 ? contacts : visibleContacts}
+          onRemove={this.removeContact}
+        />
+      </>
+    );
+  }
+}
 
 export default App;
-
